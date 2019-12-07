@@ -1,5 +1,3 @@
-import sys
-
 class Tree(object):
     "Generic tree node."
     def __init__(self, name='root', children=None, parent=None):
@@ -68,14 +66,3 @@ sum_orbits = 0
 for o in unique_object:
     sum_orbits += root.get_orbit_number(o, 0)
 print(sum_orbits)
-
-
-
-
-
-
-
-
-
-
-
