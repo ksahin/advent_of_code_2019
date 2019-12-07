@@ -1,8 +1,11 @@
+import sys
+
 class Tree(object):
     "Generic tree node."
-    def __init__(self, name='root', children=None):
+    def __init__(self, name='root', children=None, parent=None):
         self.name = name
         self.children = []
+        self.parent = parent
         if children is not None:
             for child in children:
                 self.add_child(child)
@@ -20,46 +23,55 @@ class Tree(object):
                 if match:
                     return match
 
+    def get_orbit_number(self, name, count):
+        if self.name == name:
+            return count
+        else:
+            for child in self.children:
+                match = child.get_orbit_number(name, count+1)
+                if match:
+                    return match
 
 lineList = [line.rstrip('\n') for line in open('input5.txt')]
 
-tuple_list = []
+orbit_list = []
 for i in lineList:
-    tuple_list.append((i.split(')')[0], i.split(')')[1]))
+    orbit_list.append((i.split(')')[0], i.split(')')[1]))
 
 root = Tree('COM')
-for i in tuple_list:
+for i in orbit_list:
     if i[0] == 'COM':
-        child = Tree(i[1])
+        child = Tree(i[1], parent=root)
         root.add_child(child)
-        tuple_list.remove(i)
+        orbit_list.remove(i)
 
 current_node = root.children[0]
-previous_node = current_node
-stack = []
+unique_object = set()
 found = False
-while len(tuple_list) > 0:
-    #print(len(tuple_list))
+while len(orbit_list) > 0:
     found = False
-    print(stack)
-    for i in tuple_list:
+    for i in orbit_list:
         if i[0] == current_node.name:
-            print('match ' + i[0])
-            new_node = Tree(i[1])
+            unique_object.add(i[0])
+            unique_object.add(i[1])
+            new_node = Tree(i[1], parent=current_node)
             current_node.add_child(new_node)
-            tuple_list.remove(i)
+            orbit_list.remove(i)
             current_node = new_node
-            stack.append(current_node)
-            print(current_node)
             found = True
             break
     
     if not found:
-        try:
-            current_node = stack.pop()
-        except:
-            print(tuple_list)
-            sys.exit()
+        current_node = current_node.parent
+
+sum_orbits = 0
+for o in unique_object:
+    sum_orbits += root.get_orbit_number(o, 0)
+print(sum_orbits)
+
+
+
+
 
 
 
